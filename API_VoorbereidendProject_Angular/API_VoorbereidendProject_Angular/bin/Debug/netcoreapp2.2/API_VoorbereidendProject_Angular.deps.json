@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.2",
-    "signature": "e0458e531dfb95a4dbf1bebcf3064495ef61a139"
+    "signature": "f315978e7e4803bed7c3d4be902245f66d50e15e"
   },
   "compilationOptions": {
     "defines": [
@@ -28,6 +28,7 @@
           "Microsoft.AspNetCore.Razor.Design": "2.2.0",
           "Microsoft.NETCore.App": "2.2.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "2.2.3",
+          "Sendgrid": "9.12.0",
           "Swashbuckle.AspNetCore": "4.0.1"
         },
         "runtime": {
@@ -204,6 +205,20 @@
         },
         "compile": {
           "lib/netstandard1.6/NuGet.Frameworks.dll": {}
+        }
+      },
+      "Sendgrid/9.12.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "11.0.2"
+        },
+        "runtime": {
+          "lib/netstandard2.0/SendGrid.dll": {
+            "assemblyVersion": "9.12.0.0",
+            "fileVersion": "9.12.0.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/SendGrid.dll": {}
         }
       },
       "Swashbuckle.AspNetCore/4.0.1": {
@@ -3686,6 +3701,13 @@
       "sha512": "sha512-qbXaB76XYUVLocLBs8Z9TS/ERGK2wm797feO+0JEPFvT7o7MRadOR77mqaSD4J1k8G+DlZQyq+MlkCuxrkr3ag==",
       "path": "nuget.frameworks/4.7.0",
       "hashPath": "nuget.frameworks.4.7.0.nupkg.sha512"
+    },
+    "Sendgrid/9.12.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-HrH336vKylh6Yy4bqKFNPf0Rk1C7CDd4WX7D2f7D/g0Dy584Wx2Qh7vdM+NgAkHTWQ7bKwl7K9DZ9BiFKbimdA==",
+      "path": "sendgrid/9.12.0",
+      "hashPath": "sendgrid.9.12.0.nupkg.sha512"
     },
     "Swashbuckle.AspNetCore/4.0.1": {
       "type": "package",

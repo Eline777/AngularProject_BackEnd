@@ -23,13 +23,15 @@ namespace API_VoorbereidendProject_Angular.Services
             _pollContext = pollContext;
         }
 
-        public Gebruiker Authenticate(string gebruikersnaam, string wachtwoord)
+        public Gebruiker Authenticate(string email, string wachtwoord)
         {
-            var gebruiker = _pollContext.Gebruikers.SingleOrDefault(x => x.Gebruikersnaam == gebruikersnaam && x.Wachtwoord == wachtwoord);
+            var gebruiker = _pollContext.Gebruikers.SingleOrDefault(x => x.Email == email && x.Wachtwoord == wachtwoord);
 
             // return null if user not found
             if (gebruiker == null)
+            { 
                 return null;
+            }
 
             // authentication successful so generate jwttoken
             var tokenHandler = new JwtSecurityTokenHandler();

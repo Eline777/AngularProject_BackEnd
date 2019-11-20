@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -73,9 +75,9 @@ namespace API_VoorbereidendProject_Angular
             services.AddDbContext<PollContext>(opt => opt.UseSqlServer(
                 Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddSwaggerGen(c => 
+            services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1"});
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
 
                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 {
@@ -90,10 +92,22 @@ namespace API_VoorbereidendProject_Angular
                 });
             });
 
+            //services.AddTransient<IEmailSender, EmailSender>();
+            var sendGridEmailSettingsSection = Configuration.GetSection("SendGridEmailSettings");
+
+            services.Configure<AuthMessageSenderOptions>(sendGridEmailSettingsSection);
+            //services.Configure<AuthMessageSenderOptions>(Configuration);
+           // services.Configure<AuthMessageSenderOptions>(options => Configuration.GetSection("SendGridEmailSettings").Bind(options));
+
+            //services.ConfigureApplicationCookie(o =>
+            //{
+            //    o.ExpireTimeSpan = TimeSpan.FromDays(7);
+            //    o.SlidingExpiration = true;
+            //});
         }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, PollContext context)
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, PollContext context)
         {
             if (env.IsDevelopment())
             {
@@ -104,6 +118,11 @@ namespace API_VoorbereidendProject_Angular
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Member API v1");
+            });
 
             app.UseHttpsRedirection();
             app.UseCors("MyPolicy");
@@ -111,11 +130,7 @@ namespace API_VoorbereidendProject_Angular
             app.UseMvc();
 
             DBInitializer.Initialize(context);
-            app.UseSwagger();
-            app.UseSwaggerUI(c => 
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Member API v1");
-            });
+            
 
         }
     }
