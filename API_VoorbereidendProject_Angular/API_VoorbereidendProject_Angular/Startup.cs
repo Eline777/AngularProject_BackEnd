@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using API_VoorbereidendProject_Angular.Helpers;
@@ -79,6 +81,11 @@ namespace API_VoorbereidendProject_Angular
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
 
+                // Set the comments path for the Swagger JSON and UI.
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+
                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
@@ -94,10 +101,10 @@ namespace API_VoorbereidendProject_Angular
 
             //services.AddTransient<IEmailSender, EmailSender>();
             var sendGridEmailSettingsSection = Configuration.GetSection("SendGridEmailSettings");
-
+        
             services.Configure<AuthMessageSenderOptions>(sendGridEmailSettingsSection);
             //services.Configure<AuthMessageSenderOptions>(Configuration);
-           // services.Configure<AuthMessageSenderOptions>(options => Configuration.GetSection("SendGridEmailSettings").Bind(options));
+            // services.Configure<AuthMessageSenderOptions>(options => Configuration.GetSection("SendGridEmailSettings").Bind(options));
 
             //services.ConfigureApplicationCookie(o =>
             //{

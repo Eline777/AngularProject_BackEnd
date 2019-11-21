@@ -25,7 +25,7 @@ namespace API_VoorbereidendProject_Angular.Services
 
         public Gebruiker Authenticate(string email, string wachtwoord)
         {
-            var gebruiker = _pollContext.Gebruikers.SingleOrDefault(x => x.Email == email && x.Wachtwoord == wachtwoord);
+            Gebruiker gebruiker = _pollContext.Gebruikers.SingleOrDefault(x => x.Email == email && x.Wachtwoord == wachtwoord);
 
             // return null if user not found
             if (gebruiker == null)

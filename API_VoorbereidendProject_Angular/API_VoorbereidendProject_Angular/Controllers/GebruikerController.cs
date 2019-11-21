@@ -10,6 +10,11 @@ using API_VoorbereidendProject_Angular.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Configuration;
+using SendGrid;
+using SendGrid.Helpers.Mail;
+using Microsoft.Extensions.Options;
+using System.Text;
 
 namespace API_VoorbereidendProject_Angular.Controllers
 {
@@ -19,13 +24,17 @@ namespace API_VoorbereidendProject_Angular.Controllers
     {
         private readonly PollContext _context;
         private IGebruikerService _gebruikerService;
-        private readonly EmailSender _emailSender;
+        private readonly AuthMessageSenderOptions _authMessageSenderOptions;
+        // private readonly EmailSender _emailSender;
+     //   private readonly IConfiguration _configuration;
 
-        public GebruikerController(PollContext context, IGebruikerService gebruikerService, EmailSender emailSender)
+        public GebruikerController(PollContext context, IGebruikerService gebruikerService, IOptions<AuthMessageSenderOptions> authMessageSenderOptions)
         {
             _context = context;
             _gebruikerService = gebruikerService;
-            _emailSender = emailSender;
+          //  _configuration = configuration;
+            // _emailSender = emailSender;
+            _authMessageSenderOptions = authMessageSenderOptions.Value;
         }
 
         [HttpPost("authenticate")]
@@ -41,10 +50,6 @@ namespace API_VoorbereidendProject_Angular.Controllers
                 return Ok(gebruiker);
             }
         }
-
-
-
-
 
         // GET: api/Gebruiker
         [Authorize]
@@ -104,10 +109,11 @@ namespace API_VoorbereidendProject_Angular.Controllers
         [HttpPost]
         public async Task<ActionResult<Gebruiker>> PostGebruiker(Gebruiker gebruiker)
         {
-            gebruiker.Activatiecode = Guid.NewGuid();
+            gebruiker.Activatiecode = Guid.NewGuid().ToString();
             _context.Gebruikers.Add(gebruiker);
             await _context.SaveChangesAsync();
-            await _emailSender.SendRegistrationMail(gebruiker);
+            // await _emailSender.SendRegistrationMail(gebruiker);
+            await PostMessage(gebruiker);
             return CreatedAtAction("GetGebruiker", new { id = gebruiker.GebruikerID }, gebruiker);
         }
 
@@ -138,7 +144,7 @@ namespace API_VoorbereidendProject_Angular.Controllers
 
         [HttpPost("confirmEmail")]
        // [Route("ConfirmEmail", Name = "ConfirmEmailRoute")]
-        public IActionResult ConfirmEmail(int gebruikerID, Guid activatieCode)
+        public IActionResult ConfirmEmail(int gebruikerID, string activatieCode)
         {
             var result = ConfirmationEmailSucceeded(gebruikerID, activatieCode);
             if (result)
@@ -151,7 +157,7 @@ namespace API_VoorbereidendProject_Angular.Controllers
             }
         }
 
-        private bool ConfirmationEmailSucceeded(int gebruikerID, Guid activatiecode)
+        private bool ConfirmationEmailSucceeded(int gebruikerID, string activatiecode)
         {
             var gebruiker = _context.Gebruikers.SingleOrDefault(x => x.GebruikerID == gebruikerID && x.Activatiecode == activatiecode);
             // return false als gebruiker niet gevonden is
@@ -163,6 +169,46 @@ namespace API_VoorbereidendProject_Angular.Controllers
             {
                 return true;
             }
+        }
+
+        [HttpPost("sendEmail")]
+        public async Task<Response> PostMessage(Gebruiker gebruiker)
+        {
+            var apiKey = _authMessageSenderOptions.SendGridKey;
+            var apiUser = _authMessageSenderOptions.SendGridUser;
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress("r0751363@student.thomasmore.be", apiUser);
+            var subject = "Welkom bij Poll&Friends! Bevestig uw emailadres";
+            var to = new EmailAddress(gebruiker.Email, gebruiker.Gebruikersnaam);
+
+            var activatielink = "http://localhost:4200/activeren/" + gebruiker.GebruikerID + "/" + gebruiker.Activatiecode;
+            StringBuilder builder = new StringBuilder();
+
+            var message = "Beste " + gebruiker.Gebruikersnaam + ", </br> Bedankt om u te registreren bij PollVoter. </br> Door op onderstaande link te klikken word uw account geactiveerd. </br><a href='http://localhost:4200/activeren/'" + gebruiker.GebruikerID + "/" + gebruiker.Activatiecode + "> " + activatielink + "</a>";
+
+            var plainTextContent = message;
+            var htmlContent =  message;
+
+            //  List<EmailAddress> tos = new List<EmailAddress>
+            //{
+            //    new EmailAddress("test2@example.com", "Example User 2"),
+            //    new EmailAddress("test3@example.com", "Example User 3"),
+            //    new EmailAddress("test4@example.com","Example User 4")
+            //};
+
+            //var sendGridMessage = new SendGridMessage()
+            //{
+            //    From = new EmailAddress("r0751363@student.thomasmore.be", Options.SendGridUser),
+            //    Subject = subject,
+            //    PlainTextContent = message,
+            //    HtmlContent = message
+            //};
+
+            //var displayRecipients = false; // set this to true if you want recipients to see each others mail id         
+            
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var response = await client.SendEmailAsync(msg);
+            return response;
         }
 
 

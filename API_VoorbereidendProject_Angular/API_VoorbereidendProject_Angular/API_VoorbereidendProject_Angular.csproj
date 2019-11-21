@@ -5,6 +5,15 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Eline\AngularVoorbereidendProject\AngularProject_BackEnd\API_VoorbereidendProject_Angular\API_VoorbereidendProject_Angular\API_VoorbereidendProject_Angular.xml</DocumentationFile>
+    <NoWarn>1701;1702;1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Eline\AngularVoorbereidendProject\AngularProject_BackEnd\API_VoorbereidendProject_Angular\API_VoorbereidendProject_Angular\API_VoorbereidendProject_Angular.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
