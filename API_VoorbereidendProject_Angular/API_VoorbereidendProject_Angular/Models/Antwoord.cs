@@ -10,5 +10,7 @@ namespace API_VoorbereidendProject_Angular.Models
         public int AntwoordID { get; set; }
         public string AntwoordPoll{ get; set; }
         public int PollID { get; set; }
+
+        public List<Stem> LijstStemmen { get; set; }
     }
 }

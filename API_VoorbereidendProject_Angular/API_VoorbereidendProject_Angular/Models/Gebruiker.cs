@@ -12,9 +12,13 @@ namespace API_VoorbereidendProject_Angular.Models
         public string Email { get; set; }
         public string Wachtwoord { get; set; }
         public string Gebruikersnaam { get; set; }
+        public string Voornaam { get; set; }
+        public string Achternaam { get; set; }
         [NotMapped] //Token moet geen kolom zijn in de tabel
         public string Token { get; set; }
         public string Activatiecode { get; set; }
         public bool IsActief { get; set; }
+
+        public List<PollGebruiker> LijstPollsPerGebruiker { get; set; }
     }
 }

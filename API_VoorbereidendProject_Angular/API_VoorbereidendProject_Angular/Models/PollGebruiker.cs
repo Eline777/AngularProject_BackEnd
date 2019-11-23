@@ -10,5 +10,6 @@ namespace API_VoorbereidendProject_Angular.Models
         public int PollGebruikerID { get; set; }
         public int PollID { get; set; }
         public int GebruikerID { get; set; }
+        public bool HeeftGestemd { get; set; } // door het op false te zetten kan de gebruiker zien op het dashboard dat hij nog moet stemmen voor een bepaalde poll
     }
 }

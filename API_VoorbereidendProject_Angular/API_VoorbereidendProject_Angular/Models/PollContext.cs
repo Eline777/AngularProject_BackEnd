@@ -12,6 +12,7 @@ namespace API_VoorbereidendProject_Angular.Models
         public PollContext(DbContextOptions<PollContext> options) : base(options) { }
         public DbSet<Poll> Polls { get; set; }
         public DbSet<Gebruiker> Gebruikers { get; set; }
+        public DbSet<PollGebruiker> PollGebruikers { get; set; }
         public DbSet<Antwoord> Antwoorden { get; set; }
         public DbSet<Stem> Stemmen { get; set; }
         public DbSet<Vriendschap> Vriendschappen { get; set; }
@@ -19,6 +20,7 @@ namespace API_VoorbereidendProject_Angular.Models
         {
             modelBuilder.Entity<Poll>().ToTable("Poll");
             modelBuilder.Entity<Gebruiker>().ToTable("Gebruiker");
+            modelBuilder.Entity<PollGebruiker>().ToTable("PollGebruiker");
             modelBuilder.Entity<Antwoord>().ToTable("Antwoord");
             modelBuilder.Entity<Stem>().ToTable("Stem");
             modelBuilder.Entity<Vriendschap>().ToTable("Vriendschap");

@@ -113,7 +113,7 @@ namespace API_VoorbereidendProject_Angular.Controllers
             _context.Gebruikers.Add(gebruiker);
             await _context.SaveChangesAsync();
             // await _emailSender.SendRegistrationMail(gebruiker);
-            await PostMessage(gebruiker);
+            await SendActivationEmail(gebruiker);
             return CreatedAtAction("GetGebruiker", new { id = gebruiker.GebruikerID }, gebruiker);
         }
 
@@ -172,7 +172,7 @@ namespace API_VoorbereidendProject_Angular.Controllers
         }
 
         [HttpPost("sendEmail")]
-        public async Task<Response> PostMessage(Gebruiker gebruiker)
+        public async Task<Response> SendActivationEmail(Gebruiker gebruiker)
         {
             var apiKey = _authMessageSenderOptions.SendGridKey;
             var apiUser = _authMessageSenderOptions.SendGridUser;
