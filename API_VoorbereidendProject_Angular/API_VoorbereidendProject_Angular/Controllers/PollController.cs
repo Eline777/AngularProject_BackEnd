@@ -41,6 +41,12 @@ namespace API_VoorbereidendProject_Angular.Controllers
             return poll;
         }
 
+        [HttpGet("aantal")]
+        public async Task<ActionResult<int>> GetAantalPolls()
+        {
+            return await _context.Polls.CountAsync();
+        }
+
         // PUT: api/Poll/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPoll(int id, Poll poll)

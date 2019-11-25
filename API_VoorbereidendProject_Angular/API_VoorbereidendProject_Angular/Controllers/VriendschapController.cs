@@ -88,10 +88,19 @@ namespace API_VoorbereidendProject_Angular.Controllers
         }
 
         // POST: api/Vriendschap
-        [HttpPost]
-        public async Task<ActionResult<Vriendschap>> PostVriendschap(Vriendschap vriendschap, string emailadresVriend, Gebruiker huidigeGebruiker)
+        [HttpPost("{id}")]
+        public async Task<ActionResult<Vriendschap>> PostVriendschap([FromBody] Vriendschap vriendschap, [FromRoute] int id)
         {
-            Gebruiker vriend = _context.Gebruikers.Where(x => x.Email == emailadresVriend).SingleOrDefault();
+        //    Gebruiker huidigeGebruiker = _context.Gebruikers.Where(x => x.GebruikerID == id).SingleOrDefault();
+
+            Gebruiker huidigeGebruiker = await _context.Gebruikers.FindAsync(id);
+
+            if (huidigeGebruiker == null)
+            {
+                return NotFound();
+            }
+
+            Gebruiker vriend = _context.Gebruikers.Where(x => x.Email == vriendschap.EmailVriend).SingleOrDefault();
             if (vriend != null)
             {
                 // vriendschap.ActieGebruikerID = ID van de gebruiker die als laatste de status aangepast heeft, deze gebruiker kan bv een geweigerd verzoek toch nog aanvaarden of andersom, 
@@ -111,12 +120,12 @@ namespace API_VoorbereidendProject_Angular.Controllers
                 vriendschap.Status = 0;  // 0 = verzoek verzonden, 1 = aanvaard, 2 = geweigerd, 3 = vriend verwijderd
                 _context.Vriendschappen.Add(vriendschap);
                 await _context.SaveChangesAsync();
-                await SendEmailFriendRequest(huidigeGebruiker, emailadresVriend, vriend);
+                await SendEmailFriendRequest(huidigeGebruiker, vriendschap.EmailVriend, vriend);
                 return CreatedAtAction("GetVriendschap", new { id = vriendschap.VriendschapID }, vriendschap);
             }
             else
             {
-                await SendEmailFriendRequest(huidigeGebruiker, emailadresVriend, vriend);
+                await SendEmailFriendRequest(huidigeGebruiker, vriendschap.EmailVriend, vriend);
                 return NoContent();
             }
     }
@@ -142,9 +151,11 @@ namespace API_VoorbereidendProject_Angular.Controllers
         return _context.Vriendschappen.Any(e => e.VriendschapID == id);
     }
 
-    [HttpPost("sendEmailFriendRequest")]
-    public async Task<Response> SendEmailFriendRequest(Gebruiker gebruiker, string emailadresVriend, Gebruiker vriend)
-    {
+        // [HttpPost("sendEmailFriendRequest")]
+        //  public async Task<Response> SendEmailFriendRequest(Gebruiker gebruiker, string emailadresVriend, Gebruiker vriend)
+        [NonAction]
+        public async Task<Response> SendEmailFriendRequest(Gebruiker gebruiker, string emailadresVriend, Gebruiker vriend)
+        {
         var apiKey = _authMessageSenderOptions.SendGridKey;
         var client = new SendGridClient(apiKey);
         var from = new EmailAddress(gebruiker.Email, gebruiker.Voornaam + " " + gebruiker.Achternaam);

@@ -52,12 +52,12 @@ namespace API_VoorbereidendProject_Angular.Controllers
         }
 
         // GET: api/Gebruiker
-        [Authorize]
+     //   [Authorize]
             [HttpGet]
             public async Task<ActionResult<IEnumerable<Gebruiker>>> GetGebruikers()
             {
             //  var userID = User.Claims.FirstOrDefault(c => c.Type == "UserID").Value;
-            var userID = User.Claims.FirstOrDefault(c => c.Type == "GebruikerID").Value;
+          //  var userID = User.Claims.FirstOrDefault(c => c.Type == "GebruikerID").Value;
             return await _context.Gebruikers.ToListAsync();
             }
 
@@ -75,6 +75,11 @@ namespace API_VoorbereidendProject_Angular.Controllers
             return gebruiker;
         }
 
+        [HttpGet("aantal")]
+        public async Task<ActionResult<int>> GetAantalGebruikers()
+        {
+            return await _context.Gebruikers.CountAsync();
+        }
         // PUT: api/Gebruiker/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGebruiker(int id, Gebruiker gebruiker)
