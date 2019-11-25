@@ -75,11 +75,14 @@ namespace API_VoorbereidendProject_Angular.Controllers
         [HttpPost]
         public async Task<ActionResult<Poll>> PostPoll(Poll poll)
         {
+
+           // RedirectToAction("Action", "Controller", new { id = 99 })
             // Antwoorden van de poll toevoegen aan DB
             foreach (Antwoord antwoord in poll.LijstMogelijkeAntwoorden)
             {
-                antwoord.PollID = poll.PollID;
-                _context.Antwoorden.Add(antwoord);
+                // antwoord.PollID = poll.PollID;
+                // _context.Antwoorden.Add(antwoord);
+                RedirectToAction("PostAntwoord", "AntwoordController", new { id = antwoord.AntwoordID });
             }
 
             // PollGebruiker tabel opvullen
@@ -117,5 +120,28 @@ namespace API_VoorbereidendProject_Angular.Controllers
         {
             return _context.Polls.Any(e => e.PollID == id);
         }
+
+        // POST: api/Poll/StemToevoegen
+        //[HttpPost("StemToevoegen")]
+        //public async Task<ActionResult<Poll>> AddStemToPollAntwoord(int antwoordID, int gebruikerID)
+        //{
+        //    Stem stem = new Stem();
+        //    stem.AntwoordID = antwoordID;
+        //    stem.GebruikerID = gebruikerID;
+
+        //    _context.Stemmen.Add(stem);
+        //    await _context.SaveChangesAsync();
+
+        //    return RedirectToAction("GetStemmenByAntwoord", "StemController", new { id = antwoordID });
+        //  //  return CreatedAtAction("GetPoll", new { id = stem.StemID }, stem);
+        //}
+
+        // GET: api/Poll
+        //[HttpGet("{antwoordID}/Stemmen")]
+        //public async Task<ActionResult<IEnumerable<Stem>>> GetStemmenByAntwoord(int antwoordID)
+        //{
+        //   // List<Stem> lijstStemmen = _context.Stemmen.Where(x => x.AntwoordID == antwoordID).ToList();
+        //    return await _context.Stemmen.Where(x => x.AntwoordID == antwoordID).ToListAsync();
+        //}
     }
 }

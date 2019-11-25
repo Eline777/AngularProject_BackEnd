@@ -27,14 +27,14 @@ namespace API_VoorbereidendProject_Angular.Controllers
             _authMessageSenderOptions = authMessageSenderOptions.Value;
         }
 
-        // GET: api/Vriendschappen
+        // GET: api/Vriendschap
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Vriendschap>>> GetVriendschap() //Dit zijn alle vriendschappen waarbij het verzoek aanvaard is
         {
             return await _context.Vriendschappen.Where(x => x.Status == 1).ToListAsync();
         }
 
-        // GET: api/Vriendschappen/5
+        // GET: api/Vriendschap/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Vriendschap>> GetVriendschap(int id)
         {
@@ -48,7 +48,7 @@ namespace API_VoorbereidendProject_Angular.Controllers
             return vriendschap;
         }
 
-        // GET: api/Vriendschappen
+        // GET: api/Vriendschap
         [HttpGet("vriendschapverzoeken/{gebruikerID}")]
         public async Task<ActionResult<IEnumerable<Vriendschap>>> GetVriendschapverzoekenByGebruiker(int gebruikerID) //Vriendschappen die nog nog niet aanvaard of geweigerd zijn hebben een status 0
         {
@@ -57,7 +57,7 @@ namespace API_VoorbereidendProject_Angular.Controllers
             return await _context.Vriendschappen.Where(x => x.Status == 0).Where(x => x.ActieGebruikerID != gebruikerID).ToListAsync();
         }
 
-        // PUT: api/Vriendschappen/5
+        // PUT: api/Vriendschap/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutVriendschap(int id, Vriendschap vriendschap)
         {
@@ -87,7 +87,7 @@ namespace API_VoorbereidendProject_Angular.Controllers
             return NoContent();
         }
 
-        // POST: api/Vriendschappen
+        // POST: api/Vriendschap
         [HttpPost]
         public async Task<ActionResult<Vriendschap>> PostVriendschap(Vriendschap vriendschap, string emailadresVriend, Gebruiker huidigeGebruiker)
         {
@@ -121,7 +121,7 @@ namespace API_VoorbereidendProject_Angular.Controllers
             }
     }
 
-    // DELETE: api/Vriendschappen/5
+    // DELETE: api/Vriendschap/5
     [HttpDelete("{id}")]
     public async Task<ActionResult<Vriendschap>> DeleteVriendschap(int id)
     {
