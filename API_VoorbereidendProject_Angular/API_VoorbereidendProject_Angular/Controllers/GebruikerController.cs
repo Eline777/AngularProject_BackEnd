@@ -25,15 +25,11 @@ namespace API_VoorbereidendProject_Angular.Controllers
         private readonly PollContext _context;
         private IGebruikerService _gebruikerService;
         private readonly AuthMessageSenderOptions _authMessageSenderOptions;
-        // private readonly EmailSender _emailSender;
-     //   private readonly IConfiguration _configuration;
 
         public GebruikerController(PollContext context, IGebruikerService gebruikerService, IOptions<AuthMessageSenderOptions> authMessageSenderOptions)
         {
             _context = context;
             _gebruikerService = gebruikerService;
-          //  _configuration = configuration;
-            // _emailSender = emailSender;
             _authMessageSenderOptions = authMessageSenderOptions.Value;
         }
 
@@ -117,7 +113,6 @@ namespace API_VoorbereidendProject_Angular.Controllers
             gebruiker.Activatiecode = Guid.NewGuid().ToString();
             _context.Gebruikers.Add(gebruiker);
             await _context.SaveChangesAsync();
-            // await _emailSender.SendRegistrationMail(gebruiker);
             await SendActivationEmail(gebruiker);
             return CreatedAtAction("GetGebruiker", new { id = gebruiker.GebruikerID }, gebruiker);
         }
@@ -144,15 +139,15 @@ namespace API_VoorbereidendProject_Angular.Controllers
         }
 
 
-       
 
 
-        [HttpPost("confirmEmail")]
-       // [Route("ConfirmEmail", Name = "ConfirmEmailRoute")]
-        public IActionResult ConfirmEmail(int gebruikerID, string activatieCode)
+
+        [HttpPost("confirmEmail/{activatiecode}")]
+        // [Route("ConfirmEmail", Name = "ConfirmEmailRoute")]
+        public ActionResult ConfirmEmail(string activatiecode)
         {
-            var result = ConfirmationEmailSucceeded(gebruikerID, activatieCode);
-            if (result)
+            var result = ConfirmationEmailSucceeded(activatiecode);
+            if (result == true)
             {
                 return Ok(new EmailConfirmationResponse { EmailConfirmed = true });
             }
@@ -162,9 +157,9 @@ namespace API_VoorbereidendProject_Angular.Controllers
             }
         }
 
-        private bool ConfirmationEmailSucceeded(int gebruikerID, string activatiecode)
+        private bool ConfirmationEmailSucceeded(string activatiecode)
         {
-            var gebruiker = _context.Gebruikers.SingleOrDefault(x => x.GebruikerID == gebruikerID && x.Activatiecode == activatiecode);
+            var gebruiker = _context.Gebruikers.SingleOrDefault(x => x.Activatiecode == activatiecode);
             // return false als gebruiker niet gevonden is
             if (gebruiker == null)
             {
@@ -172,6 +167,8 @@ namespace API_VoorbereidendProject_Angular.Controllers
             }
             else
             {
+                gebruiker.IsActief = true;
+                _context.SaveChanges();
                 return true;
             }
         }
@@ -184,12 +181,12 @@ namespace API_VoorbereidendProject_Angular.Controllers
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress("r0751363@student.thomasmore.be", apiUser);
             var subject = "Welkom bij Poll&Friends! Bevestig uw emailadres";
-            var to = new EmailAddress(gebruiker.Email, gebruiker.Gebruikersnaam);
+            var to = new EmailAddress(gebruiker.Email, gebruiker.Voornaam);
 
-            var activatielink = "http://localhost:4200/activeren/" + gebruiker.GebruikerID + "/" + gebruiker.Activatiecode;
-            StringBuilder builder = new StringBuilder();
+            var activatielink = "http://localhost:4200/activeren/" + gebruiker.Activatiecode;
+        //    StringBuilder builder = new StringBuilder();
 
-            var message = "Beste " + gebruiker.Gebruikersnaam + ", </br> Bedankt om u te registreren bij PollVoter. </br> Door op onderstaande link te klikken word uw account geactiveerd. </br><a href='http://localhost:4200/activeren/'" + gebruiker.GebruikerID + "/" + gebruiker.Activatiecode + "> " + activatielink + "</a>";
+            var message = "Beste " + gebruiker.Voornaam + ", </br> Bedankt om u te registreren bij PollVoter. </br> Door op onderstaande link te klikken word uw account geactiveerd. </br><a href=\"" + activatielink + "\"> " + activatielink + "</a>";
 
             var plainTextContent = message;
             var htmlContent =  message;

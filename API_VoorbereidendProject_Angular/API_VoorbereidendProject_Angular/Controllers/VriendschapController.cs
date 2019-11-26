@@ -158,7 +158,7 @@ namespace API_VoorbereidendProject_Angular.Controllers
         {
         var apiKey = _authMessageSenderOptions.SendGridKey;
         var client = new SendGridClient(apiKey);
-        var from = new EmailAddress(gebruiker.Email, gebruiker.Voornaam + " " + gebruiker.Achternaam);
+        var from = new EmailAddress(gebruiker.Email, gebruiker.Gebruikersnaam);
         var to = new EmailAddress("", "");
         var subject = "";
         var message = "";
