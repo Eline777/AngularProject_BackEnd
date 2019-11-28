@@ -138,12 +138,7 @@ namespace API_VoorbereidendProject_Angular.Controllers
             return _context.Gebruikers.Any(e => e.GebruikerID == id);
         }
 
-
-
-
-
         [HttpPost("confirmEmail/{activatiecode}")]
-        // [Route("ConfirmEmail", Name = "ConfirmEmailRoute")]
         public ActionResult ConfirmEmail(string activatiecode)
         {
             var result = ConfirmationEmailSucceeded(activatiecode);
@@ -184,7 +179,6 @@ namespace API_VoorbereidendProject_Angular.Controllers
             var to = new EmailAddress(gebruiker.Email, gebruiker.Voornaam);
 
             var activatielink = "http://localhost:4200/activeren/" + gebruiker.Activatiecode;
-        //    StringBuilder builder = new StringBuilder();
 
             var message = "Beste " + gebruiker.Voornaam + ", </br> Bedankt om u te registreren bij PollVoter. </br> Door op onderstaande link te klikken word uw account geactiveerd. </br><a href=\"" + activatielink + "\"> " + activatielink + "</a>";
 
@@ -212,7 +206,5 @@ namespace API_VoorbereidendProject_Angular.Controllers
             var response = await client.SendEmailAsync(msg);
             return response;
         }
-
-
     }
 }
