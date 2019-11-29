@@ -180,7 +180,9 @@ namespace API_VoorbereidendProject_Angular.Controllers
 
             var activatielink = "http://localhost:4200/activeren/" + gebruiker.Activatiecode;
 
-            var message = "Beste " + gebruiker.Voornaam + ", </br> Bedankt om u te registreren bij PollVoter. </br> Door op onderstaande link te klikken word uw account geactiveerd. </br><a href=\"" + activatielink + "\"> " + activatielink + "</a>";
+            var message = "Beste " + gebruiker.Voornaam + ", </br> Bedankt om u te registreren bij PollVoter. " +
+                "</br> Door op onderstaande link te klikken word uw account geactiveerd. " +
+                "</br><a href=\"" + activatielink + "\"> " + activatielink + "</a>";
 
             var plainTextContent = message;
             var htmlContent =  message;

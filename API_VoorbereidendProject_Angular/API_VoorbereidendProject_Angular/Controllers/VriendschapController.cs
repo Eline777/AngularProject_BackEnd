@@ -143,14 +143,14 @@ namespace API_VoorbereidendProject_Angular.Controllers
 
             return NoContent();
         }
-
+        // public async Task<ActionResult<Vriendschap>> PostVriendschap([FromBody] Vriendschap vriendschap, [FromRoute] int gebruikerID) 
         // POST: api/Vriendschap
-        [HttpPost("{gebruikerID}")]
-        public async Task<ActionResult<Vriendschap>> PostVriendschap([FromBody] Vriendschap vriendschap, [FromRoute] int gebruikerID) // wanneer er een verzoek gestuurd wordt (nieuwe vriendschap wordt gemaakt)
+        [HttpPost]
+        public async Task<ActionResult<Vriendschap>> PostVriendschap(Vriendschap vriendschap) // wanneer er een verzoek gestuurd wordt (nieuwe vriendschap wordt gemaakt)
         {
             //    Gebruiker huidigeGebruiker = _context.Gebruikers.Where(x => x.GebruikerID == id).SingleOrDefault();
 
-            Gebruiker huidigeGebruiker = await _context.Gebruikers.FindAsync(gebruikerID);
+            Gebruiker huidigeGebruiker = await _context.Gebruikers.FindAsync(vriendschap.ActieGebruikerID);
 
             if (huidigeGebruiker == null)
             {
@@ -223,6 +223,10 @@ namespace API_VoorbereidendProject_Angular.Controllers
 
             if (vriend == null) // vriend heeft nog geen account
             {
+                //vriend.Email = emailadresVriend;
+                //_context.Gebruikers.Add(vriend);
+                //await _context.SaveChangesAsync();
+
                 to = new EmailAddress(emailadresVriend, "");
                 subject = "Iemand nodigt u uit om lid te worden van Poll&Friends";
                 link = "http://localhost:4200/registreren/";
@@ -234,8 +238,10 @@ namespace API_VoorbereidendProject_Angular.Controllers
                 to = new EmailAddress(vriend.Email, vriend.Voornaam + " " + vriend.Achternaam);
                 subject = gebruiker.Voornaam + " " + gebruiker.Achternaam + " heeft u een vriendschapverzoek gestuurd op Poll&Friends";
                 link = "http://localhost:4200/vriendschappen/vriendschapverzoeken/" + vriend.GebruikerID;
-                message = "Beste + " + vriend.Voornaam + ", </br>" + gebruiker.Voornaam + " " + gebruiker.Achternaam + " heeft u een vriendschapverzoekgestuurd op Poll&Friends </br> Via onderstaande link kan u dit verzoek aanvaarden of afwijzen. " +
-                   "</br><a href='http://localhost:4200/vriendschappen/vriendschapverzoeken/'" + "> " + link + "</a>";
+                message = "Beste + " + vriend.Voornaam + ", " +
+                    "</br>" + gebruiker.Voornaam + " " + gebruiker.Achternaam + " heeft u een vriendschapverzoekgestuurd op Poll&Friends " +
+                    "</br> Via onderstaande link kan u dit verzoek aanvaarden of afwijzen. " +
+                   "</br><a href =\"" + link + "\"> " + link + "</a>";                 
             }
 
             //    StringBuilder builder = new StringBuilder();
