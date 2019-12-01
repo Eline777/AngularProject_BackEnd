@@ -122,7 +122,6 @@ namespace API_VoorbereidendProject_Angular.Controllers
         // public async Task<ActionResult<Vriendschap>> PostVriendschap([FromBody] Vriendschap vriendschap, [FromRoute] int gebruikerID) 
         // POST: api/Vriendschap
         [HttpPost]
-        //  public async Task<ActionResult<Vriendschap>> PostVriendschap(Vriendschap vriendschap) 
         public async Task<Response> PostVriendschapAndSendEmail(Vriendschap vriendschap) // wanneer er een verzoek gestuurd wordt
         //  (nieuw vriendschapobject wordt gemaakt wanneer de vriend een account heeft, indien hij geen account heeft krijgt hij een mail om zich te registreren )
         // Response = SendGrid.Response
@@ -149,12 +148,10 @@ namespace API_VoorbereidendProject_Angular.Controllers
                 _context.Vriendschappen.Add(vriendschap);
                 await _context.SaveChangesAsync();
                 return await SendEmailFriendRequest(huidigeGebruiker, vriendschap.EmailVriend, vriend);
-               // return CreatedAtAction("GetVriendschap", new { id = vriendschap.VriendschapID }, vriendschap);
             }
             else
             {
                 return await SendEmailFriendRequest(huidigeGebruiker, vriendschap.EmailVriend, vriend);
-               // return NoContent();
             }
         }
 

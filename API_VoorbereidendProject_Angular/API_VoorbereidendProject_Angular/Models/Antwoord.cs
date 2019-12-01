@@ -12,5 +12,6 @@ namespace API_VoorbereidendProject_Angular.Models
         public int PollID { get; set; }
 
         public List<Stem> LijstStemmen { get; set; }
+        //public Poll Poll { get; set; }
     }
 }

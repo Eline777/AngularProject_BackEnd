@@ -43,6 +43,8 @@ namespace API_VoorbereidendProject_Angular.Controllers
             }
             else
             {
+                //  gebruiker.LijstPollsPerGebruiker = RedirectToAction("GetPollsGebruikerByGebruiker", "PollController", gebruiker);
+             //   gebruiker.LijstPollsPerGebruiker = GetPollsGebruikerByGebruiker(gebruiker.GebruikerID);
                 return Ok(gebruiker);
             }
         }
@@ -69,6 +71,16 @@ namespace API_VoorbereidendProject_Angular.Controllers
             }
 
             return gebruiker;
+        }
+        //[HttpGet("vrienden/{gebruikerID}")]
+        //public async Task<List<Gebruiker>> GetVriendenByGebruikerAsync(int gebruikerID)List<Gebruiker> vrienden = new List<Gebruiker>();
+        [HttpGet("pollsGebruiker/{gebruikerID}")]
+        public async Task<List<PollGebruiker>> GetPollsGebruikerByGebruiker(int gebruikerID)
+        {
+            IQueryable<PollGebruiker> pollGebruikerIQ = _context.PollGebruikers;
+           // List<Poll> lijstPolls = _context.Polls.ToList();
+            List<PollGebruiker> lijstPollsGebruiker = new List<PollGebruiker>();
+            return lijstPollsGebruiker = await pollGebruikerIQ.Where(x => x.GebruikerID == gebruikerID).ToListAsync();   //.Include(x => x.Poll).Include(x => x.Poll.LijstMogelijkeAntwoorden).ToListAsync();
         }
 
         [HttpGet("aantal")]

@@ -10,5 +10,8 @@ namespace API_VoorbereidendProject_Angular.Models
         public int StemID { get; set; }
         public int AntwoordID { get; set; }
         public int GebruikerID { get; set; }
+
+        //public Antwoord Antwoord { get; set; }
+        //public Gebruiker Gebruiker { get; set; }
     }
 }
