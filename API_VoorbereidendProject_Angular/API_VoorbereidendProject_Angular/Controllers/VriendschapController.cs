@@ -63,36 +63,12 @@ namespace API_VoorbereidendProject_Angular.Controllers
         }
 
         // GET: api/Vriendschap
-        //[Authorize]
-        //[HttpGet("vrienden/{gebruikerID}")]
-        //public async Task<ActionResult<IEnumerable<Vriendschap>>> GetVriendenByGebruiker(int gebruikerID) //Vriendschappen die nog nog niet aanvaard of geweigerd zijn hebben een status 0
-        //{
-        //    return await _context.Vriendschappen
-        //            .Where(x => x.Status == 1)
-        //            .Where(x => x.GebruikerEenID == gebruikerID || x.GebruikerTweeID == gebruikerID).ToListAsync();
-        //}
-
-        // GET: api/Vriendschap
         [HttpGet("vrienden/{gebruikerID}")]
         public async Task<List<Gebruiker>> GetVriendenByGebruikerAsync(int gebruikerID)
         {
-            // IEnumerable<Vriendschap> vrienden = new IEnumerable<Vriendschap>();
-            //IQueryable<Vriendschap> vriendschapIQ = _context.Vriendschappen
-            //    .Where(x => x.Status == 1)
-            //    .Where(x => x.GebruikerEenID == gebruikerID || x.GebruikerTweeID == gebruikerID);
-
-
-            //List<Vriendschap> vrienden = vriendschapIQ.Include(x => x.Vriend).ToList();
-
-            // IEnumerable<Vriendschap> vrienden = vriendschapIQ.Include(x => x.Vriend).AsEnumerable<Vriendschap>();
-            // return await vriendschapIQ.Include(x => x.Vriend).AsEnumerable();
-            // return await vrienden;
-
-            //   return await  vriendschapIQ.AsEnumerable<Vriendschap>();
-
             List<Gebruiker> vrienden = new List<Gebruiker>();
             List<Vriendschap> lijstVriendschappen = await _context.Vriendschappen
-                .Where(x => x.Status == 1)
+                .Where(x => x.Status == 1) // status 1 wil zeggen dat het verzoek aanvaard is (ze zijn dus vrienden)
                 .Where(x => x.GebruikerEenID == gebruikerID || x.GebruikerTweeID == gebruikerID).ToListAsync();
 
             foreach (var item in lijstVriendschappen)
@@ -146,21 +122,16 @@ namespace API_VoorbereidendProject_Angular.Controllers
         // public async Task<ActionResult<Vriendschap>> PostVriendschap([FromBody] Vriendschap vriendschap, [FromRoute] int gebruikerID) 
         // POST: api/Vriendschap
         [HttpPost]
-        public async Task<ActionResult<Vriendschap>> PostVriendschap(Vriendschap vriendschap) // wanneer er een verzoek gestuurd wordt (nieuwe vriendschap wordt gemaakt)
+        //  public async Task<ActionResult<Vriendschap>> PostVriendschap(Vriendschap vriendschap) 
+        public async Task<Response> PostVriendschapAndSendEmail(Vriendschap vriendschap) // wanneer er een verzoek gestuurd wordt
+        //  (nieuw vriendschapobject wordt gemaakt wanneer de vriend een account heeft, indien hij geen account heeft krijgt hij een mail om zich te registreren )
+        // Response = SendGrid.Response
         {
-            //    Gebruiker huidigeGebruiker = _context.Gebruikers.Where(x => x.GebruikerID == id).SingleOrDefault();
-
-            Gebruiker huidigeGebruiker = await _context.Gebruikers.FindAsync(vriendschap.ActieGebruikerID);
-
-            if (huidigeGebruiker == null)
-            {
-                return NotFound();
-            }
-
+            Gebruiker huidigeGebruiker = _context.Gebruikers.Where(x => x.GebruikerID == vriendschap.ActieGebruikerID).SingleOrDefault();
             Gebruiker vriend = _context.Gebruikers.Where(x => x.Email == vriendschap.EmailVriend).SingleOrDefault();
             if (vriend != null)
             {
-                // vriendschap.ActieGebruikerID = ID van de gebruiker die als laatste de status aangepast heeft, deze gebruiker kan bv een geweigerd verzoek toch nog aanvaarden of andersom, 
+                // vriendschap.ActieGebruikerID = ID van de gebruiker die als laatste de status aangepast heeft, in dit geval degene die het verzoek heeft verstuurd
                 // of het is de gebruiker die het verzoek gestuurd heeft
                 // gebruikerEenID is altijd lager dan gebruikerTweeID
                 if (vriendschap.ActieGebruikerID < vriend.GebruikerID)
@@ -177,13 +148,13 @@ namespace API_VoorbereidendProject_Angular.Controllers
                 vriendschap.Status = 0;  // 0 = verzoek verzonden, 1 = aanvaard, 2 = geweigerd, 3 = vriend verwijderd
                 _context.Vriendschappen.Add(vriendschap);
                 await _context.SaveChangesAsync();
-                await SendEmailFriendRequest(huidigeGebruiker, vriendschap.EmailVriend, vriend);
-                return CreatedAtAction("GetVriendschap", new { id = vriendschap.VriendschapID }, vriendschap);
+                return await SendEmailFriendRequest(huidigeGebruiker, vriendschap.EmailVriend, vriend);
+               // return CreatedAtAction("GetVriendschap", new { id = vriendschap.VriendschapID }, vriendschap);
             }
             else
             {
-                await SendEmailFriendRequest(huidigeGebruiker, vriendschap.EmailVriend, vriend);
-                return NoContent();
+                return await SendEmailFriendRequest(huidigeGebruiker, vriendschap.EmailVriend, vriend);
+               // return NoContent();
             }
         }
 
@@ -227,7 +198,7 @@ namespace API_VoorbereidendProject_Angular.Controllers
                 //_context.Gebruikers.Add(vriend);
                 //await _context.SaveChangesAsync();
 
-                to = new EmailAddress(emailadresVriend, "");
+                to = new EmailAddress(emailadresVriend, emailadresVriend);
                 subject = "Iemand nodigt u uit om lid te worden van Poll&Friends";
                 link = "http://localhost:4200/registreren/";
                 message = "Beste, </br>" + gebruiker.Voornaam + " " + gebruiker.Achternaam + " heeft u uitgenodigd om lid te worden van Poll&Friends </br> Via onderstaande link kan u een account aanmaken " +
@@ -243,13 +214,14 @@ namespace API_VoorbereidendProject_Angular.Controllers
                     "</br> Via onderstaande link kan u dit verzoek aanvaarden of afwijzen. " +
                    "</br><a href =\"" + link + "\"> " + link + "</a>";                 
             }
-
-            //    StringBuilder builder = new StringBuilder();
             var plainTextContent = message;
             var htmlContent = message;
 
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            var response = await client.SendEmailAsync(msg);
+            // var response = await client.SendEmailAsync(msg);
+            var response = await client.RequestAsync(method: SendGridClient.Method.POST,
+                                                  requestBody: msg.Serialize(),
+                                                  urlPath: "mail/send");
             return response;
         }
     }
