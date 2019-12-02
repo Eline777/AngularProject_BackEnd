@@ -4,8 +4,5 @@
         <name>API_VoorbereidendProject_Angular</name>
     </assembly>
     <members>
-        <member name="M:API_VoorbereidendProject_Angular.Services.EmailSender.SendRegistrationMail(API_VoorbereidendProject_Angular.Models.Gebruiker)">
-            
-        </member>
     </members>
 </doc>

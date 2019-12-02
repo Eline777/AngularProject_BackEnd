@@ -48,16 +48,6 @@ namespace API_VoorbereidendProject_Angular.Controllers
             return poll;
         }
         
-
-       //// [HttpGet("pollGebruiker/{gebruikerID}")]
-       // public async Task<List<PollGebruiker>> GetPollsGebruikerByGebruiker(int gebruikerID) 
-       // {
-       //     IQueryable<PollGebruiker> pollGebruikerIQ = _context.PollGebruikers;
-       //     List<Poll> lijstPolls = _context.Polls.ToList();
-       //     List<PollGebruiker> lijstPollsGebruiker = new List<PollGebruiker>();
-       //     return lijstPollsGebruiker = await pollGebruikerIQ.Where(x => x.GebruikerID == gebruikerID).Include(x => x.Poll).ToListAsync();
-       // }
-
         [HttpGet("aantal")]
         public async Task<ActionResult<int>> GetAantalPolls() // Om het totaal te tonen op de homepagina
         {
@@ -99,13 +89,11 @@ namespace API_VoorbereidendProject_Angular.Controllers
         public async Task<ActionResult<Poll>> PostPoll(Poll poll)
         {
             _context.Polls.Add(poll);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); // Eerst poll aanmaken zodat het juiste pollID kan toegevoegd worden aan pollGebruiker
 
             // Antwoorden van de poll toevoegen aan DB
             foreach (Antwoord antwoord in poll.LijstMogelijkeAntwoorden)
             {
-                // antwoord.PollID = poll.PollID;
-                // _context.Antwoorden.Add(antwoord);
                 RedirectToAction("PostAntwoord", "AntwoordController", new { id = antwoord.AntwoordID });
             }
 
@@ -113,14 +101,9 @@ namespace API_VoorbereidendProject_Angular.Controllers
             foreach (PollGebruiker pollGebruiker in poll.LijstGebruikersPerPoll)
             {
                 pollGebruiker.PollID = poll.PollID;
-              //  pollGebruiker.Gebruiker = _context.Gebruikers.Where(x => x.GebruikerID == pollGebruiker.GebruikerID).SingleOrDefault();
                 pollGebruiker.HeeftGestemd = false; // door het op false te zetten kan de gebruiker zien op het dashboard dat hij nog moet stemmen
-                //_context.PollGebruikers.Add(pollGebruiker);
             }
             _context.PollGebruikers.AddRange(poll.LijstGebruikersPerPoll);
-
-            //_context.Polls.Add(poll);
-            //await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPoll", new { id = poll.PollID }, poll);
         }
@@ -145,28 +128,5 @@ namespace API_VoorbereidendProject_Angular.Controllers
         {
             return _context.Polls.Any(e => e.PollID == id);
         }
-
-        // POST: api/Poll/StemToevoegen
-        //[HttpPost("StemToevoegen")]
-        //public async Task<ActionResult<Poll>> AddStemToPollAntwoord(int antwoordID, int gebruikerID)
-        //{
-        //    Stem stem = new Stem();
-        //    stem.AntwoordID = antwoordID;
-        //    stem.GebruikerID = gebruikerID;
-
-        //    _context.Stemmen.Add(stem);
-        //    await _context.SaveChangesAsync();
-
-        //    return RedirectToAction("GetStemmenByAntwoord", "StemController", new { id = antwoordID });
-        //  //  return CreatedAtAction("GetPoll", new { id = stem.StemID }, stem);
-        //}
-
-        // GET: api/Poll
-        //[HttpGet("{antwoordID}/Stemmen")]
-        //public async Task<ActionResult<IEnumerable<Stem>>> GetStemmenByAntwoord(int antwoordID)
-        //{
-        //   // List<Stem> lijstStemmen = _context.Stemmen.Where(x => x.AntwoordID == antwoordID).ToList();
-        //    return await _context.Stemmen.Where(x => x.AntwoordID == antwoordID).ToListAsync();
-        //}
     }
 }

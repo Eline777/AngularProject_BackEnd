@@ -25,6 +25,5 @@ namespace API_VoorbereidendProject_Angular.Models
             modelBuilder.Entity<Stem>().ToTable("Stem");
             modelBuilder.Entity<Vriendschap>().ToTable("Vriendschap");
         }
-       // public DbSet<Vriendschap> Vriendschap { get; set; }
     }
 }

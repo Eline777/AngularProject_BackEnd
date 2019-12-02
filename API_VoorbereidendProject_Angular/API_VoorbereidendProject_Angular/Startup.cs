@@ -99,18 +99,8 @@ namespace API_VoorbereidendProject_Angular
                 });
             });
 
-            //services.AddTransient<IEmailSender, EmailSender>();
             var sendGridEmailSettingsSection = Configuration.GetSection("SendGridEmailSettings");
-        
             services.Configure<AuthMessageSenderOptions>(sendGridEmailSettingsSection);
-            //services.Configure<AuthMessageSenderOptions>(Configuration);
-            // services.Configure<AuthMessageSenderOptions>(options => Configuration.GetSection("SendGridEmailSettings").Bind(options));
-
-            //services.ConfigureApplicationCookie(o =>
-            //{
-            //    o.ExpireTimeSpan = TimeSpan.FromDays(7);
-            //    o.SlidingExpiration = true;
-            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -137,8 +127,6 @@ namespace API_VoorbereidendProject_Angular
             app.UseMvc();
 
             DBInitializer.Initialize(context);
-            
-
         }
     }
 }

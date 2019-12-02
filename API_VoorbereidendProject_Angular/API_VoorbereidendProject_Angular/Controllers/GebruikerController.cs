@@ -43,8 +43,6 @@ namespace API_VoorbereidendProject_Angular.Controllers
             }
             else
             {
-                //  gebruiker.LijstPollsPerGebruiker = RedirectToAction("GetPollsGebruikerByGebruiker", "PollController", gebruiker);
-             //   gebruiker.LijstPollsPerGebruiker = GetPollsGebruikerByGebruiker(gebruiker.GebruikerID);
                 return Ok(gebruiker);
             }
         }
@@ -72,15 +70,13 @@ namespace API_VoorbereidendProject_Angular.Controllers
 
             return gebruiker;
         }
-        //[HttpGet("vrienden/{gebruikerID}")]
-        //public async Task<List<Gebruiker>> GetVriendenByGebruikerAsync(int gebruikerID)List<Gebruiker> vrienden = new List<Gebruiker>();
+        
         [HttpGet("pollsGebruiker/{gebruikerID}")]
         public async Task<List<PollGebruiker>> GetPollsGebruikerByGebruiker(int gebruikerID)
         {
             IQueryable<PollGebruiker> pollGebruikerIQ = _context.PollGebruikers;
-           // List<Poll> lijstPolls = _context.Polls.ToList();
             List<PollGebruiker> lijstPollsGebruiker = new List<PollGebruiker>();
-            return lijstPollsGebruiker = await pollGebruikerIQ.Where(x => x.GebruikerID == gebruikerID).ToListAsync();   //.Include(x => x.Poll).Include(x => x.Poll.LijstMogelijkeAntwoorden).ToListAsync();
+            return lijstPollsGebruiker = await pollGebruikerIQ.Where(x => x.GebruikerID == gebruikerID).ToListAsync();
         }
 
         [HttpGet("aantal")]
@@ -88,6 +84,7 @@ namespace API_VoorbereidendProject_Angular.Controllers
         {
             return await _context.Gebruikers.CountAsync();
         }
+
         // PUT: api/Gebruiker/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGebruiker(int id, Gebruiker gebruiker)
@@ -197,25 +194,7 @@ namespace API_VoorbereidendProject_Angular.Controllers
                 "</br><a href=\"" + activatielink + "\"> " + activatielink + "</a>";
 
             var plainTextContent = message;
-            var htmlContent =  message;
-
-            //  List<EmailAddress> tos = new List<EmailAddress>
-            //{
-            //    new EmailAddress("test2@example.com", "Example User 2"),
-            //    new EmailAddress("test3@example.com", "Example User 3"),
-            //    new EmailAddress("test4@example.com","Example User 4")
-            //};
-
-            //var sendGridMessage = new SendGridMessage()
-            //{
-            //    From = new EmailAddress("r0751363@student.thomasmore.be", Options.SendGridUser),
-            //    Subject = subject,
-            //    PlainTextContent = message,
-            //    HtmlContent = message
-            //};
-
-            //var displayRecipients = false; // set this to true if you want recipients to see each others mail id         
-            
+            var htmlContent =  message;          
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             var response = await client.SendEmailAsync(msg);
             return response;

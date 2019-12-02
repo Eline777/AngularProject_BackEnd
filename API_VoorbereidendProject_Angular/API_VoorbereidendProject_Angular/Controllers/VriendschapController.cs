@@ -30,9 +30,8 @@ namespace API_VoorbereidendProject_Angular.Controllers
 
         // GET: api/Vriendschap
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Vriendschap>>> GetVriendschap() //Dit zijn alle vriendschappen waarbij het verzoek aanvaard is
+        public async Task<ActionResult<IEnumerable<Vriendschap>>> GetVriendschap()
         {
-            //return await _context.Vriendschappen.Where(x => x.Status == 1).ToListAsync();
             return await _context.Vriendschappen.ToListAsync();
         }
 
@@ -119,8 +118,7 @@ namespace API_VoorbereidendProject_Angular.Controllers
 
             return NoContent();
         }
-        // public async Task<ActionResult<Vriendschap>> PostVriendschap([FromBody] Vriendschap vriendschap, [FromRoute] int gebruikerID) 
-        // POST: api/Vriendschap
+
         [HttpPost]
         public async Task<Response> PostVriendschapAndSendEmail(Vriendschap vriendschap) // wanneer er een verzoek gestuurd wordt
         //  (nieuw vriendschapobject wordt gemaakt wanneer de vriend een account heeft, indien hij geen account heeft krijgt hij een mail om zich te registreren )
@@ -176,8 +174,6 @@ namespace API_VoorbereidendProject_Angular.Controllers
             return _context.Vriendschappen.Any(e => e.VriendschapID == id);
         }
 
-        // [HttpPost("sendEmailFriendRequest")]
-        //  public async Task<Response> SendEmailFriendRequest(Gebruiker gebruiker, string emailadresVriend, Gebruiker vriend)
         [NonAction]
         public async Task<Response> SendEmailFriendRequest(Gebruiker gebruiker, string emailadresVriend, Gebruiker vriend)
         {
@@ -191,10 +187,6 @@ namespace API_VoorbereidendProject_Angular.Controllers
 
             if (vriend == null) // vriend heeft nog geen account
             {
-                //vriend.Email = emailadresVriend;
-                //_context.Gebruikers.Add(vriend);
-                //await _context.SaveChangesAsync();
-
                 to = new EmailAddress(emailadresVriend, emailadresVriend);
                 subject = "Iemand nodigt u uit om lid te worden van Poll&Friends";
                 link = "http://localhost:4200/registreren/";
@@ -215,7 +207,6 @@ namespace API_VoorbereidendProject_Angular.Controllers
             var htmlContent = message;
 
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            // var response = await client.SendEmailAsync(msg);
             var response = await client.RequestAsync(method: SendGridClient.Method.POST,
                                                   requestBody: msg.Serialize(),
                                                   urlPath: "mail/send");
